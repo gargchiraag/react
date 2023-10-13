@@ -1,7 +1,13 @@
 import './App.css';
 // import { useState } from 'react';
 import {useForm} from 'react-hook-form';
-
+import * as yup from 'yup'
+import { yupResolver } from "@hookform/resolvers/yup";
+const userSchema=yup.object().shape({
+  userName:yup.string().min(3,'Name must be greater than 3').required("Name is Required!"),
+  emailId:yup.string().email("Invalid Email Address!!").required("Email is Required!"),
+  password:yup.string().min(3,"Password must be greater than 3").required("Password is required!!")
+})
 function App() {
   // const [name, setName] = useState('');
   // const [email, setEmail] = useState('');
@@ -57,9 +63,8 @@ function App() {
   //   }
   // }
 
-  const {register,handleSubmit , formState:{errors}}=useForm();
+  const {register,handleSubmit , formState:{errors}}=useForm({resolver: yupResolver(userSchema),});
   console.log(errors);
-
   return (
     // <div id="form">
     //   <div>
@@ -87,20 +92,25 @@ function App() {
     // </div>
     <div>
       <form onSubmit={handleSubmit((data)=>{
-        console.log(data)
+        alert(`Name: ${data.userName}
+        Email : ${data.emailId}
+        Password: ${data.password}
+        D.O.B: ${data.dob}
+        `)
       })}>
         <h3>Sign Up Form</h3>
         <label>User Name</label>
-        <input type='text' id='userName' {...register('userName',{required:"Enter the name"})} />
+        <input type='text' id='userName' {...register('userName')} placeholder='Name'/>
+        <span >{errors.userName?.message}</span>
         <label>Email Id</label>
-        <input type='text' id='emailId' {...register('emailId',{required:"Please Enter the email"})} />
+        <input type='text' id='emailId' placeholder='Email' {...register('emailId')} />
+        <span >{errors.emailId?.message}</span>
         <label>Password</label>
-        <input type='text' id='password' {...register('password',{required:"Enter the password", minLength:{value:7,message:"Mininum 7 length required"}})} />
+        <input type='password' id='password' placeholder='Password' {...register('password')} />
+        <span >{errors.password?.message}</span>
         <label>Date Of Birth</label>
-        <input type='date' id='dob' name='dob' />
-
+        <input type='date' id='dob' name='dob'  {...register('dob')} />
         <button type='submit'>Submit</button>
-
       </form>
     </div> 
   );
